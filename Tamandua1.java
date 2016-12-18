@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+//import java.util.logging.*;
 
 public class Tamandua1 {
     //Direction class has been changed, add new version to submission package.
@@ -7,6 +8,15 @@ public class Tamandua1 {
         int myID = iPackage.myID;
         int neutralID = 0;
         GameMap gameMap = iPackage.map;
+        
+        /**
+        Logger log = Logger.getLogger("debug.logger");
+        log.setLevel(Level.ALL);
+        ConsoleHandler handler = new ConsoleHandler();
+        handler.setFormatter(new SimpleFormatter());
+        handler.setLevel(Level.ALL);
+        log.addHandler(handler);
+        **/
 
         Networking.sendInit("Tamandua");
         
@@ -33,9 +43,9 @@ public class Tamandua1 {
                 boolean nBorder = false;
                 boolean eBorder = false;
                 for (Direction d : Direction.CARDINALS) {
-                    if (gameMap.getSite(new Location(c.x, c.y), d).owner == 0) {
+                    if (gameMap.getSite(new Location(c.x, c.y), d).owner == 0 && gameMap.getSite(new Location(c.x, c.y), d).production != 0) {
                         nBorder = true;
-                    } else if (gameMap.getSite(new Location(c.x, c.y), d).owner != myID) {
+                    } else if (gameMap.getSite(new Location(c.x, c.y), d).owner != myID && gameMap.getSite(new Location(c.x, c.y), d).owner != 0) {
                         eBorder = true;
                     }
                 }
@@ -53,7 +63,7 @@ public class Tamandua1 {
                     if (s.owner != myID && s.owner != 0) {
                         if (s.strength < c.strength) {
                             //THESE NUMBERS AND RATIOS MAY BE CHANGED IN ORDER TO BETTER WEIGH OPTIONS
-                            c.weights[d] = 1 + (s.production / (s.strength + 1));
+                            c.weights[d] = 1 + s.strength;
                             toRemove.add(c);
                         }
                     }
@@ -69,9 +79,11 @@ public class Tamandua1 {
                 for (int d = 1; d <= 4; d++) {
                     Site s = gameMap.getSite(new Location(c.x, c.y), Direction.fromInteger(d));
                     if (s.owner != myID) {
+                        //log.fine("site strength " + s.strength);
+                        //log.fine("cell strength " + c.strength);
                         if (s.strength < c.strength) {
                             //THESE NUMBERS ARE RATIOS MAY BE CHANGED IN ORDER TO BETTER WEIGH OPTIONS
-                            c.weights[d] = 1 + (s.production / (s.strength + 1));
+                            c.weights[d] = 1 + s.production;
                             toRemove.add(c);
                         }
                     }
