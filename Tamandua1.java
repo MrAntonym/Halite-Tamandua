@@ -53,7 +53,7 @@ public class Tamandua1 {
                     if (s.owner != myID && s.owner != 0) {
                         if (s.strength < c.strength) {
                             //THESE NUMBERS AND RATIOS MAY BE CHANGED IN ORDER TO BETTER WEIGH OPTIONS
-                            c.weights[d] = 1 + c.production / c.strength;
+                            c.weights[d] = 1 + (s.production / (s.strength + 1));
                             toRemove.add(c);
                         }
                     }
@@ -71,7 +71,7 @@ public class Tamandua1 {
                     if (s.owner != myID) {
                         if (s.strength < c.strength) {
                             //THESE NUMBERS ARE RATIOS MAY BE CHANGED IN ORDER TO BETTER WEIGH OPTIONS
-                            c.weights[d] = 1 + c.production / c.strength;
+                            c.weights[d] = 1 + (s.production / (s.strength + 1));
                             toRemove.add(c);
                         }
                     }
@@ -199,62 +199,36 @@ public class Tamandua1 {
         }
         if (xDirection && !wrapX) {
             if (x - x2 > 0) {
-                return new GoalCell(gameMap, new Location(x2, y2), Direction.WEST);
+                GoalCell output = new GoalCell(gameMap, new Location(x2, y2), Direction.WEST);
+                return output;
             } else {
-                return new GoalCell(gameMap, new Location(x2, y2), Direction.EAST);
+                GoalCell output = new GoalCell(gameMap, new Location(x2, y2), Direction.EAST);
+                return output;
             }
         } else if (!xDirection && !wrapY) {
             if (y - y2 > 0) {
-                return new GoalCell(gameMap, new Location(x2, y2), Direction.NORTH);
+                GoalCell output = new GoalCell(gameMap, new Location(x2, y2), Direction.NORTH);
+                return output;
             } else {
-                return new GoalCell(gameMap, new Location(x2, y2), Direction.SOUTH);
+                GoalCell output = new GoalCell(gameMap, new Location(x2, y2), Direction.SOUTH);
+                return output;
             }
         } else if (xDirection && wrapX) {
             if (x - x2 > 0) {
-                return new GoalCell(gameMap, new Location(x2, y2), Direction.EAST);
+                GoalCell output = new GoalCell(gameMap, new Location(x2, y2), Direction.EAST);
+                return output;
             } else {
-                return new GoalCell(gameMap, new Location(x2, y2), Direction.WEST);
+                GoalCell output = new GoalCell(gameMap, new Location(x2, y2), Direction.WEST);
+                return output;
             }
         } else {
             if (y - y2 > 0) {
-                return new GoalCell(gameMap, new Location(x2, y2), Direction.SOUTH);
+                GoalCell output = new GoalCell(gameMap, new Location(x2, y2), Direction.SOUTH);
+                return output;
             } else {
-                return new GoalCell(gameMap, new Location(x2, y2), Direction.NORTH);
+                GoalCell output = new GoalCell(gameMap, new Location(x2, y2), Direction.NORTH);
+                return output;
             }
         }
     }
-
-private class Cell {
-    public int x, y, strength, production;
-    public GameMap gameMap;
-    public double[] weights = {1.0, 0.0, 0.0, 0.0, 0.0}; //same indices as the enum's "fromInteger"
-    public int needs = 0; //how much strength that needs to be added to this cell for it to capture something next frame.
-    public Move m;
-    public GoalCell gC; //this should be null if the cell is on the border.
-    
-    public Cell(GameMap gM, Location l) {
-        gameMap = gM;
-        x = l.x;
-        y = l.y;
-        Site s = gameMap.getSite(new Location(x, y));
-        strength = s.strength;
-        production = s.production;
-    }
-    public Cell(GameMap gM, int x_, int y_) {
-        gameMap = gM;
-        x = x_;
-        y = y_;
-        Site s = gameMap.getSite(new Location(x, y));
-        strength = s.strength;
-        production = s.production;
-    }
-}
-private class GoalCell extends Cell {
-    public Direction d;
-    
-    public GoalCell(GameMap gM, Location l, Direction d_) {
-        super(gM, l);
-        d = d_;
-    }
-}
 }
