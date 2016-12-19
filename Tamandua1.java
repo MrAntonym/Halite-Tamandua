@@ -5,7 +5,6 @@ public class Tamandua1 {
     public static void main(String[] args) throws java.io.IOException {
         InitPackage iPackage = Networking.getInit();
         int myID = iPackage.myID;
-        int neutralID = 0;
         GameMap gameMap = iPackage.map;
         
         /**
@@ -144,7 +143,7 @@ public class Tamandua1 {
                     /**
                     Temporary measure to test other improvements
                     **/
-                    if (c.strength > c.production * 3) {
+                    if (c.strength > c.production * 3.5) {
                         switch (c.gC.d) {
                             case NORTH: c.weights[1] += 2; break;
                             case EAST: c.weights[2] += 2; break;
@@ -161,7 +160,7 @@ public class Tamandua1 {
             ArrayList<Move> moves = new ArrayList<Move>();
             for (Cell c : cells) {
                 int bestWeight = 0;
-                for (int i = 1; i < 5; i++) {
+                for (int i = 0; i < 5; i++) {
                     if (c.weights[i] > c.weights[bestWeight]) {
                         bestWeight = i;
                     }
