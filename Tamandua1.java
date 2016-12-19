@@ -2,7 +2,6 @@ import java.util.ArrayList;
 //import java.util.logging.*;
 
 public class Tamandua1 {
-    //Direction class has been changed, add new version to submission package.
     public static void main(String[] args) throws java.io.IOException {
         InitPackage iPackage = Networking.getInit();
         int myID = iPackage.myID;
@@ -170,6 +169,40 @@ public class Tamandua1 {
                 moves.add(new Move(new Location(c.x, c.y), Direction.fromInteger(bestWeight)));
             }
             
+            //remove moves which will delete at least production * 2 strength because of the 255 limit and replace them with still moves.
+            int[][] futureMap = new int[gameMap.height][gameMap.width]; //futureMap[y][x]
+            for (int h = 0; h < gameMap.height; h++) {
+                for (int w = 0; w < gameMap.width; w++) {
+                    futureMap[h][w] = 0;
+                }
+            }
+            for (Move m : moves) {
+                if (m.dir == Direction.STILL) {
+                    futureMap[m.loc.y][m.loc.x] += gameMap.getSite(m.loc).production;
+                } else {
+                    Location l = gameMap.getLocation(m.loc, m.dir);
+                    if (gameMap.getSite(l).owner != myID) {
+                        futureMap[l.y][l.x] += gameMap.getSite(m.loc).strength - gameMap.getSite(l).strength;
+                    } else {
+                        futureMap[l.y][l.x] += gameMap.getSite(m.loc).strength - gameMap.getSite(l).strength;
+                    }
+                }
+            }
+            for (int h = 0; h < gameMap.height; h++) {
+                for (int w = 0; w < gameMap.width; w++) {
+                    if (futureMap[h][w] > 255 + gameMap.getSite(new Location(w, h)).production * 2) {
+                        for (Move m : moves) {
+                            Location l = gameMap.getLocation(m.loc, m.dir);
+                            if (l.x == w && l.y == h) {
+                                moves.remove(m);
+                                moves.add(new Move(new Location(w, h), Direction.STILL));
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            
             Networking.sendFrame(moves);
         }
     }
@@ -178,7 +211,7 @@ public class Tamandua1 {
         int x = c.x;
         int y = c.y;
         int closest = 0;
-        for (int i = 1; i < border.size(); i++) {
+        for (int i = 0; i < border.size(); i++) {
             if (gameMap.getDistance(new Location(x, y), new Location(border.get(i).x, border.get(i).y)) < gameMap.getDistance(new Location(x, y), new Location(border.get(closest).x, border.get(closest).y))) {
                 closest = i;
             }
