@@ -56,15 +56,27 @@ public class Tamandua1 {
             
             //check for any enemy cell that is capturable - cells on the enemy border will never attack a neutral cell in order to avoid losing short-term strength which is more important against an enemy bot.
             for (Cell c : eBorderCells) {
+                int damage;
+                boolean removeMe = false;
                 for (int d = 1; d <= 4; d++) {
-                    Site s = gameMap.getSite(new Location(c.x, c.y), Direction.fromInteger(d));
+                    Location l = gameMap.getLocation(new Location(c.x, c.y), Direction.fromInteger(d));
+                    Site s = gameMap.getSite(l);
                     if (s.owner != myID && s.owner != 0) {
-                        if (s.strength < c.strength) {
-                            //THESE NUMBERS AND RATIOS MAY BE CHANGED IN ORDER TO BETTER WEIGH OPTIONS
-                            c.weights[d] = 1 + s.strength;
-                            toRemove.add(c);
+                        damage = 0;
+                        for (Direction d2 : Direction.CARDINALS) {
+                            Site s2 = gameMap.getSite(l, d2);
+                            if (s2.owner != myID && s.owner != 0) {
+                                damage += c.strength;
+                            }
+                        }
+                        if (damage > c.production) {
+                            c.weights[d] = 1 + damage;
+                            removeMe = true;
                         }
                     }
+                }
+                if (removeMe) {
+                    toRemove.add(c);
                 }
             }
             //remove from the list all cells which have decided weights - they won't need to be calculated on their "needs" value.
